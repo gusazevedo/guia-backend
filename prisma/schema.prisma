@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuthProvider {
+  GOOGLE
+  APPLE
+}
+
+enum Testament {
+  OLD
+  NEW
+}
+
+model User {
+  id         String       @id @default(cuid())
+  email      String       @unique
+  name       String
+  photoUrl   String?
+  provider   AuthProvider
+  providerId String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  progress  ChapterRead[]
+  followers Follow[]      @relation("following")
+  following Follow[]      @relation("follower")
+
+  @@unique([provider, providerId])
+}
+
+model Book {
+  id        Int       @id
+  slug      String    @unique
+  name      String
+  testament Testament
+  chapters  Int
+
+  readings ChapterRead[]
+}
+
+model ChapterRead {
+  id      String   @id @default(cuid())
+  userId  String
+  bookId  Int
+  chapter Int
+  readAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id])
+
+  @@unique([userId, bookId, chapter])
+  @@index([userId])
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+}
