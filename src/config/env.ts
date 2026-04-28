@@ -9,6 +9,7 @@ const schema = z.object({
   JWT_EXPIRES_IN: z.string().default('30d'),
   GOOGLE_CLIENT_ID: z.string().optional(),
   APPLE_CLIENT_ID: z.string().optional(),
+  CORS_ORIGIN: z.string().default('*'),
 });
 
 const parsed = schema.safeParse(process.env);

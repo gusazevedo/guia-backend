@@ -4,7 +4,10 @@
       "Bash(npm init *)",
       "Bash(node -e \"const p=require\\('./package.json'\\);p.name='guia-backend';p.version='0.1.0';p.private=true;p.type='commonjs';p.scripts={dev:'tsx watch src/server.ts',build:'tsc -p tsconfig.json','db:migrate':'prisma migrate dev','db:seed':'tsx src/db/seed.ts','db:studio':'prisma studio',start:'node dist/server.js',lint:'eslint \\\\\"src/**/*.ts\\\\\"',format:'prettier --write \\\\\"src/**/*.ts\\\\\"'};require\\('fs'\\).writeFileSync\\('package.json',JSON.stringify\\(p,null,2\\)\\);\")",
       "Bash(npx tsc *)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(npm install *)",
+      "Bash(aws logs *)",
+      "Bash(aws lambda list-functions *)"
     ]
   }
 }

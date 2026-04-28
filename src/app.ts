@@ -1,4 +1,5 @@
 import express from 'express';
+import { env } from './config/env';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -13,8 +14,9 @@ import { openApiSpec } from './docs/openapi';
 export function buildApp() {
   const app = express();
 
+  app.set('trust proxy', 1);
   app.use(helmet({ contentSecurityPolicy: false }));
-  app.use(cors());
+  app.use(cors({ origin: env.CORS_ORIGIN }));
   app.use(express.json());
   app.use(morgan('dev'));
 

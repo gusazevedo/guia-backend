@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Guia Backend API
+Parameters:
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+  JwtSecret:
+    Type: String
+    NoEcho: true
+  JwtExpiresIn:
+    Type: String
+    Default: 30d
+  GoogleClientId:
+    Type: String
+    Default: ''
+  AppleClientId:
+    Type: String
+    Default: ''
+  CorsOrigin:
+    Type: String
+    Default: '*'
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 30
+    MemorySize: 256
+    Environment:
+      Variables:
+        NODE_ENV: production
+        DATABASE_URL:
+          Ref: DatabaseUrl
+        JWT_SECRET:
+          Ref: JwtSecret
+        JWT_EXPIRES_IN:
+          Ref: JwtExpiresIn
+        GOOGLE_CLIENT_ID:
+          Ref: GoogleClientId
+        APPLE_CLIENT_ID:
+          Ref: AppleClientId
+        CORS_ORIGIN:
+          Ref: CorsOrigin
+Resources:
+  GuiaApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+  GuiaFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+      SamResourceId: GuiaFunction
+    Properties:
+      Handler: dist/lambda.handler
+      CodeUri: GuiaFunction
+      Events:
+        RootEvent:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: GuiaApi
+            Path: /
+            Method: ANY
+        ProxyEvent:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: GuiaApi
+            Path: /{proxy+}
+            Method: ANY
+Outputs:
+  ApiUrl:
+    Description: URL da API
+    Value:
+      Fn::Sub: https://${GuiaApi}.execute-api.${AWS::Region}.amazonaws.com
